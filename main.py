@@ -23,21 +23,27 @@ data = load_data(10000)
 # Notify the reader that the data was successfully loaded.
 data_load_state.text("Done! (using st.cache)")
 
-if st.checkbox('Show raw data'):
+
+
+
+
+
+
+
+menu = st.sidebar.radio('Which data do you want to see?', ('Raw Data', 'Mapped Data', 'Bar Chart', ))
+
+if menu == 'Raw Data':
     st.subheader('Raw data')
     st.write(data)
 
-hist_values = np.histogram(
-    data[DATE_COLUMN].dt.hour, bins=24, range=(0,24))[0]
+elif menu == 'Mapped Data':
+    hour_to_filter = st.slider('hour', 0, 23, 17)  # min: 0h, max: 23h, default: 17h
+    filtered_data = data[data[DATE_COLUMN].dt.hour == hour_to_filter]
+    st.subheader(f'Map of all pickups at {hour_to_filter}:00')
+    st.map(filtered_data)
 
-st.bar_chart(hist_values)
+elif menu == 'Bar Chart':
+    hist_values = np.histogram(
+        data[DATE_COLUMN].dt.hour, bins=24, range=(0, 24))[0]
 
-hour_to_filter = st.slider('hour', 0, 23, 17)  # min: 0h, max: 23h, default: 17h
-
-
-filtered_data = data[data[DATE_COLUMN].dt.hour == hour_to_filter]
-st.subheader(f'Map of all pickups at {hour_to_filter}:00')
-st.map(filtered_data)
-
-
-
+    st.bar_chart(hist_values)
